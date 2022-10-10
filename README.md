@@ -17,7 +17,7 @@ tags:
   - javascript
 ---
 ```
--- 해당 파일명의 route가 생성 (example.md => post/example) 
+- 해당 파일명의 route가 생성 (example.md => post/example) 
 
 ### Description
 
@@ -47,4 +47,40 @@ export async function getStaticProps() {
 }
 ```
 
-- 각 post 페이지 라우팅을 위해 getStaticPaths 이용하여 동적 라우팅 생성 및 해당하는 id의 md 문서 정보 html로 파싱 후 dangerouslySetInnerHTML을 이용해 직접 삽입
+- 각 post 페이지 라우팅을 위해 getStaticPaths 이용하여 동적 라우팅 생성 
+```javascript
+export async function getStaticPaths() {
+  const files = fs.readdirSync('__posts');
+  const paths = files.map((fileName) => ({
+    params: {
+      slug: fileName.replace('.md', ''),
+    },
+  }));
+  return {
+    paths,
+    fallback: false,
+  };
+}
+```
+- 해당하는 id의 md 문서 정보 html로 파싱 후 dangerouslySetInnerHTML을 이용해 직접 삽입
+```javascript 
+export async function getStaticProps({ params: { slug } }: any) {
+  const fileName = fs.readFileSync(`__posts/${slug}.md`, 'utf-8');
+  const { data: frontmatter, content } = matter(fileName);
+  return {
+    props: {
+      frontmatter,
+      content,
+    },
+  };
+}
+
+export default function PostPage({ frontmatter, content }: any) {
+  return (
+    <div className='prose mx-auto'>
+      <h1>{frontmatter.title}</h1>
+      <div dangerouslySetInnerHTML={{ __html: md().render(content) }} />
+    </div>
+  );
+}
+```
