@@ -11,7 +11,7 @@
 title: 'Javascript'
 metaTitle: 'Javascript core concept'
 metaDesc: 'Javascript core concept used in coding interview'
-socialImage: images/javascript.png
+image: images/javascript.png
 date: '2022-10-10'
 tags:
   - javascript
